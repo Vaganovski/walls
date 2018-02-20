@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+
+    <style media="screen">
+    .button {
+      width:50px;
+      height: 50px;
+      cursor: pointer;
+    }
+    .up {
+      background: url('stuff/u.png') no-repeat center;
+      position: absolute; top:0; left:50px;
+    }
+
+    .left {
+      background: url('stuff/l.png') no-repeat center;
+      position: absolute; top:50px; left:0px;
+    }
+    .right {
+      background: url('stuff/r.png') no-repeat center;
+      position: absolute; top:50px; left:100px;
+    }
+    .down {
+      background: url('stuff/d.png') no-repeat center;
+      position: absolute; top:100px; left:50px;
+    }
+
+    .wall {
+      background: url('stuff/wall.png') no-repeat center;
+      position: absolute; top:50px; left:180px; width: 100px;
+    }
+
+    .window {
+      background: url('stuff/window.png') no-repeat center;
+      position: absolute; top:50px; left:300px; width: 50px;
+    }
+
+    .door {
+      background: url('stuff/door.png') no-repeat center;
+      position: absolute; top:50px; left:370px; width: 50px;
+    }
+
+    .len {
+      text-align: right;
+      position: absolute; width: 130px; top: 20px; right:120px;
+    }
+
+    input {width: 50px;}
+
+    .wid {
+      text-align: right;
+      position: absolute; width: 130px; top: 80px; right:120px;
+    }
+
+    #ok {
+      position: absolute; top:20px; right:20px; width: 80px;
+    }
+
+    #next {
+      position: absolute; top:80px; right:20px; width: 80px;
+    }
+    </style>
+  </head>
+  <body onload="init();">
+<div style="width:685px; border:2px solid #fee599; padding:20px;">
+<canvas id="testCanvas" width="685" height="600"></canvas>
+
+<div style="height:150px; border:2px solid #c55a11; background:#deebf7; position: relative;">
+
+<div id="up" class="button up"></div>
+<div id="left" class="button left"></div>
+<div id="right" class="button right"></div>
+<div id="down" class="button down"></div>
+<div id="wall" class="button wall"></div>
+<div id="window" class="button window"></div>
+<div id="door" class="button door"></div>
+
+<div class="len">
+  <label>длина <input type="text" id="len"></label>
+</div>
+
+<div class="wid">
+  <label>ширина <input type="text" id="wid"></label>
+</div>
+
+<button type="button" name="next" id="next">Далее</button>
+<button type="button" name="ok" id="ok">OK</button>
+
+</div>
+
+<script type="text/javascript" src="js/easeljs-NEXT.min.js"></script>
+<script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+<script>
+	var canvas, g;
+	var stage;
+	var container;
+  var dir, element;
+  var x=300, y=300;
+  var lastLen=0, lastWid=0, lastDir, lastX=x, lastY=y;
+	function init() {
+		canvas = document.getElementById("testCanvas");
+		stage = new createjs.Stage(canvas);
+
+    g = new createjs.Graphics();
+    g.setStrokeStyle(1);
+    g.beginStroke("#41719c");
+    g.beginFill("#5b9bd5");
+
+
+	}
+
+  $(document).ready(function() {
+      $("#up, #down, #left, #right").click(function(event) {
+          dir = event.target.id;
+          $("#up, #down, #left, #right").css('opacity', 1);
+          $(this).css('opacity', 0.5);
+      });
+
+      $("#wall, #door, #window").click(function(event) {
+          element = event.target.id;
+          $("#wall, #door, #window").css('opacity', 1);
+          $(this).css('opacity', 0.5);
+      });
+
+      $("#next").click(function(event) {
+          var len = parseInt($("#len").val());
+          var wid = parseInt($("#wid").val());
+
+          if (dir == "right") {
+            if (lastDir=="down") {
+              lastX = lastX+lastWid;
+              lastY = lastY+lastLen;
+              lastDir = dir;
+              g.drawRect(lastX, lastY ,len, wid);
+            } else if (lastDir=="up") {
+              lastX = lastX+lastWid;
+              lastY = lastY-wid;
+              lastDir = dir;
+              g.drawRect(lastX, lastY ,len, wid);
+            } else if (!lastDir) {
+              lastDir = dir;
+              g.drawRect(lastX, lastY ,len, wid);
+            }
+          } else if (dir == "left") {
+            if (lastDir=="down") {
+              lastX = lastX-len;
+              lastY = lastY+lastLen;
+              lastDir = dir;
+              g.drawRect(lastX, lastY ,len, wid);
+            } else if (lastDir=="up") {
+              lastX = lastX-len;
+              lastY = lastY-wid;
+              lastDir = dir;
+              g.drawRect(lastX, lastY ,len, wid);
+            } else if (!lastDir) {
+              lastDir = dir;
+              lastX = lastX-len;
+              g.drawRect(lastX, lastY ,len, wid);
+            }
+          } else if (dir == "up") {
+            if (lastDir=="right") {
+              lastX = lastX+lastLen;
+              lastY = lastY-len;
+              lastDir = dir;
+              g.drawRect(lastX, lastY ,wid, len);
+            } else if (lastDir=="left") {
+              lastX = lastX-wid;
+              lastY = lastY-len;
+              lastDir = dir;
+              g.drawRect(lastX, lastY ,wid, len);
+            } else if (!lastDir) {
+              lastDir = dir;
+              lastY = lastY-len;
+              g.drawRect(lastX, lastY ,wid, len);
+            }
+          } else if (dir == "down") {
+            if (lastDir=="right") {
+              lastX = lastX+lastLen;
+              lastY = lastY+lastWid;
+              lastDir = dir;
+              g.drawRect(lastX, lastY ,wid, len);
+            } else if (lastDir=="left") {
+              lastX = lastX-wid;
+              lastY = lastY+lastWid;
+              lastDir = dir;
+              g.drawRect(lastX, lastY ,wid, len);
+            } else if (!lastDir) {
+              lastDir = dir;
+              g.drawRect(lastX, lastY ,wid, len);
+            }
+          }
+          //lastDir = dir;
+          lastLen = len; lastWid = wid;
+
+
+          var shape = new createjs.Shape(g);
+          stage.addChild(shape);
+          stage.update();
+          $("#wall, #door, #window").css('opacity', 1);
+      });
+
+  });
+
+</script>
+
+
+  </body>
+</html>
