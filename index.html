@@ -65,8 +65,8 @@
     </style>
   </head>
   <body onload="init();">
-<div style="width:685px; border:2px solid #fee599; padding:20px;">
-<canvas id="testCanvas" width="685" height="600"></canvas>
+<div style="width:701px; border:2px solid #fee599; padding:20px;">
+<canvas id="testCanvas" width="701" height="601"></canvas>
 
 <div style="height:150px; border:2px solid #c55a11; background:#deebf7; position: relative;">
 
@@ -79,11 +79,11 @@
 <div id="door" class="button door"></div>
 
 <div class="len">
-  <label>длина <input type="text" id="len"></label>
+  <label id="line1">Длина: </label><input type="text" id="len">
 </div>
 
 <div class="wid">
-  <label>ширина <input type="text" id="wid"></label>
+  <label id="line2">Ширина: </label><input type="text" id="wid">
 </div>
 
 <button type="button" name="next" id="next">Далее</button>
@@ -95,22 +95,55 @@
 <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
 <script>
 	var canvas, g;
-	var stage;
-	var container;
-  var dir, element;
-  var x=300, y=300;
-  var lastLen=0, lastWid=0, lastDir, lastX=x, lastY=y;
+	var stage, container, line1, line2;
+  var dir, element, offsetX=0, offsetY=0, contX, contY;
+  var lastLen=0, lastWid=0, lastDir, lastX=300, lastY=300;
+  var ppm = 50;
 	function init() {
 		canvas = document.getElementById("testCanvas");
 		stage = new createjs.Stage(canvas);
 
+    stage.enableMouseOver(5);
+
+    stage.on("pressmove", function(evt) {
+        container.x = contX+evt.stageX-offsetX;
+        container.y = contY+evt.stageY-offsetY;
+        stage.update();
+    });
+
+    stage.on("mousedown", function(evt) {
+      contX = container.x; contY = container.y;
+      offsetX=evt.stageX; offsetY = evt.stageY;
+    });
+
+    var grid = new createjs.Shape();
+
+    grid.graphics.beginStroke("#aaaaaa").setStrokeStyle(0.5);
+
+    for (var i = 0; i < 4*canvas.width/ppm; i++) {
+      grid.graphics.moveTo(i*ppm,0).lineTo(i*ppm, canvas.height*4);
+    }
+    for (var i = 0; i < 4*canvas.height/ppm; i++) {
+      grid.graphics.moveTo(0,i*ppm).lineTo(canvas.width*4, i*ppm);
+    }
+
     g = new createjs.Graphics();
     g.setStrokeStyle(1);
     g.beginStroke("#41719c");
-    g.beginFill("#5b9bd5");
+    //g.beginFill("#5b9bd5");
 
+    container = new createjs.Container();
+    container.cursor = "all-scroll";
+    stage.addChild(container);
 
+    container.addChild(grid);
+
+    var shape = new createjs.Shape(g);
+    container.addChild(shape);
+
+    stage.update();
 	}
+
 
   $(document).ready(function() {
       $("#up, #down, #left, #right").click(function(event) {
@@ -123,81 +156,139 @@
           element = event.target.id;
           $("#wall, #door, #window").css('opacity', 1);
           $(this).css('opacity', 0.5);
+          if (element == "window" || element == "door") {
+            line1.text("Длина1: ");
+            line2.text("Длина2: ");
+          } else {
+            line1.text("Длина: ");
+            line2.text("Ширина: ");
+          }
       });
 
+      line1 = $("#line1");line2 = $("#line2");
+
       $("#next").click(function(event) {
-          var len = parseInt($("#len").val());
-          var wid = parseInt($("#wid").val());
+          var len = parseInt($("#len").val())*ppm/100;
+          var wid = parseInt($("#wid").val())*ppm/100;
 
-          if (dir == "right") {
-            if (lastDir=="down") {
-              lastX = lastX+lastWid;
-              lastY = lastY+lastLen;
-              lastDir = dir;
-              g.drawRect(lastX, lastY ,len, wid);
-            } else if (lastDir=="up") {
-              lastX = lastX+lastWid;
-              lastY = lastY-wid;
-              lastDir = dir;
-              g.drawRect(lastX, lastY ,len, wid);
-            } else if (!lastDir) {
-              lastDir = dir;
-              g.drawRect(lastX, lastY ,len, wid);
+          if (element == "wall") {
+            g.beginFill("#5b9bd5");
+            if (dir == "right") {
+              if (lastDir=="down") {
+                lastX = lastX+lastWid;
+                lastY = lastY+lastLen;
+                lastDir = dir;
+                g.drawRect(lastX, lastY ,len, wid);
+                lastLen = len; lastWid = wid;
+              } else if (lastDir=="up") {
+                lastX = lastX+lastWid;
+                lastY = lastY-wid;
+                lastDir = dir;
+                g.drawRect(lastX, lastY ,len, wid);
+                lastLen = len; lastWid = wid;
+              } else if (!lastDir) {
+                lastDir = dir;
+                g.drawRect(lastX, lastY ,len, wid);
+                lastLen = len; lastWid = wid;
+              }
+            } else if (dir == "left") {
+              if (lastDir=="down") {
+                lastX = lastX-len;
+                lastY = lastY+lastLen;
+                lastDir = dir;
+                g.drawRect(lastX, lastY ,len, wid);
+                lastLen = len; lastWid = wid;
+              } else if (lastDir=="up") {
+                lastX = lastX-len;
+                lastY = lastY-wid;
+                lastDir = dir;
+                g.drawRect(lastX, lastY ,len, wid);
+                lastLen = len; lastWid = wid;
+              } else if (!lastDir) {
+                lastDir = dir;
+                lastX = lastX-len;
+                g.drawRect(lastX, lastY ,len, wid);
+                lastLen = len; lastWid = wid;
+              }
+            } else if (dir == "up") {
+              if (lastDir=="right") {
+                lastX = lastX+lastLen;
+                lastY = lastY-len;
+                lastDir = dir;
+                g.drawRect(lastX, lastY ,wid, len);
+                lastLen = len; lastWid = wid;
+              } else if (lastDir=="left") {
+                lastX = lastX-wid;
+                lastY = lastY-len;
+                lastDir = dir;
+                g.drawRect(lastX, lastY ,wid, len);
+                lastLen = len; lastWid = wid;
+              } else if (!lastDir) {
+                lastDir = dir;
+                lastY = lastY-len;
+                g.drawRect(lastX, lastY ,wid, len);
+                lastLen = len; lastWid = wid;
+              }
+            } else if (dir == "down") {
+              if (lastDir=="right") {
+                lastX = lastX+lastLen;
+                lastY = lastY+lastWid;
+                lastDir = dir;
+                g.drawRect(lastX, lastY ,wid, len);
+                lastLen = len; lastWid = wid;
+              } else if (lastDir=="left") {
+                lastX = lastX-wid;
+                lastY = lastY+lastWid;
+                lastDir = dir;
+                g.drawRect(lastX, lastY ,wid, len);
+                lastLen = len; lastWid = wid;
+              } else if (!lastDir) {
+                lastDir = dir;
+                g.drawRect(lastX, lastY ,wid, len);
+                lastLen = len; lastWid = wid;
+              }
             }
-          } else if (dir == "left") {
-            if (lastDir=="down") {
-              lastX = lastX-len;
-              lastY = lastY+lastLen;
-              lastDir = dir;
-              g.drawRect(lastX, lastY ,len, wid);
-            } else if (lastDir=="up") {
-              lastX = lastX-len;
-              lastY = lastY-wid;
-              lastDir = dir;
-              g.drawRect(lastX, lastY ,len, wid);
-            } else if (!lastDir) {
-              lastDir = dir;
-              lastX = lastX-len;
-              g.drawRect(lastX, lastY ,len, wid);
+          } else if (element == "window" && len+wid <= lastLen) {
+            g.beginFill("#FFFFFF");
+            if (lastDir == "right") {
+              g.drawRect(lastX+len, lastY ,wid, lastWid);
+            } else if (lastDir == "left") {
+              g.drawRect(lastX+lastLen-len-wid, lastY ,wid, lastWid);
+            } else if (lastDir == "up") {
+              g.drawRect(lastX, lastY + lastLen-wid-len ,lastWid, wid);
+            } else if (lastDir == "down") {
+              g.drawRect(lastX, lastY+len ,lastWid, wid);
             }
-          } else if (dir == "up") {
-            if (lastDir=="right") {
-              lastX = lastX+lastLen;
-              lastY = lastY-len;
-              lastDir = dir;
-              g.drawRect(lastX, lastY ,wid, len);
-            } else if (lastDir=="left") {
-              lastX = lastX-wid;
-              lastY = lastY-len;
-              lastDir = dir;
-              g.drawRect(lastX, lastY ,wid, len);
-            } else if (!lastDir) {
-              lastDir = dir;
-              lastY = lastY-len;
-              g.drawRect(lastX, lastY ,wid, len);
+          } else if (element == "door" && len+wid <= lastLen) {
+            g.beginFill("#FFFFFF");
+            var shape = new createjs.Shape();
+            if (lastDir == "right") {
+              g.drawRect(lastX+len, lastY ,wid, lastWid);
+              shape.graphics.beginFill("#ff0000").drawRect(0, 0, wid, 2);
+              shape.x = lastX+len; shape.y = lastY;
+            } else if (lastDir == "left") {
+              g.drawRect(lastX+lastLen-len-wid, lastY ,wid, lastWid);
+              shape.graphics.beginFill("#ff0000").drawRect(0, 0, wid, 2);
+              shape.x = lastX+lastLen-len-wid; shape.y = lastY;
+            } else if (lastDir == "up") {
+              g.drawRect(lastX, lastY + lastLen-wid-len ,lastWid, wid);
+              shape.graphics.beginFill("#ff0000").drawRect(0, 0, 2, wid);
+              shape.x = lastX; shape.y = lastY + lastLen-wid-len;
+            } else if (lastDir == "down") {
+              g.drawRect(lastX, lastY+len ,lastWid, wid);
+              shape.graphics.beginFill("#ff0000").drawRect(0, 0, 2, wid);
+              shape.x = lastX; shape.y = lastY+len;
             }
-          } else if (dir == "down") {
-            if (lastDir=="right") {
-              lastX = lastX+lastLen;
-              lastY = lastY+lastWid;
-              lastDir = dir;
-              g.drawRect(lastX, lastY ,wid, len);
-            } else if (lastDir=="left") {
-              lastX = lastX-wid;
-              lastY = lastY+lastWid;
-              lastDir = dir;
-              g.drawRect(lastX, lastY ,wid, len);
-            } else if (!lastDir) {
-              lastDir = dir;
-              g.drawRect(lastX, lastY ,wid, len);
-            }
+
+            shape.rotation = -30;
+            container.addChild(shape);
           }
+
+          element="";
           //lastDir = dir;
-          lastLen = len; lastWid = wid;
+          //lastLen = len; lastWid = wid;
 
 
-          var shape = new createjs.Shape(g);
-          stage.addChild(shape);
           stage.update();
           $("#wall, #door, #window").css('opacity', 1);
       });
