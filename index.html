@@ -118,18 +118,18 @@
 
     var grid = new createjs.Shape();
 
-    grid.graphics.beginStroke("#aaaaaa").setStrokeStyle(0.5);
+    grid.graphics.beginStroke("#bbbbbb").setStrokeStyle(0.5);
 
     for (var i = 0; i < 4*canvas.width/ppm; i++) {
-      grid.graphics.moveTo(i*ppm,0).lineTo(i*ppm, canvas.height*4);
+      grid.graphics.moveTo(i*ppm-2*canvas.width,-canvas.height*2).lineTo(i*ppm-2*canvas.width, canvas.height*2);
     }
     for (var i = 0; i < 4*canvas.height/ppm; i++) {
-      grid.graphics.moveTo(0,i*ppm).lineTo(canvas.width*4, i*ppm);
+      grid.graphics.moveTo(-2*canvas.width,i*ppm-2*canvas.height).lineTo(canvas.width*2, i*ppm-2*canvas.height);
     }
 
     g = new createjs.Graphics();
-    g.setStrokeStyle(1);
-    g.beginStroke("#41719c");
+    g.setStrokeStyle(2);
+    g.beginStroke("#000000");
     //g.beginFill("#5b9bd5");
 
     container = new createjs.Container();
@@ -172,7 +172,7 @@
           var wid = parseInt($("#wid").val())*ppm/100;
 
           if (element == "wall") {
-            g.beginFill("#5b9bd5");
+            g.beginFill("#ffffff");
             if (dir == "right") {
               if (lastDir=="down") {
                 lastX = lastX+lastWid;
@@ -251,36 +251,40 @@
           } else if (element == "window" && len+wid <= lastLen) {
             g.beginFill("#FFFFFF");
             if (lastDir == "right") {
-              g.drawRect(lastX+len, lastY ,wid, lastWid);
+              g.drawRect(lastX+len, lastY ,wid, lastWid/2);
+              g.drawRect(lastX+len, lastY+lastWid/2 ,wid, lastWid/2);
             } else if (lastDir == "left") {
-              g.drawRect(lastX+lastLen-len-wid, lastY ,wid, lastWid);
+              g.drawRect(lastX+lastLen-len-wid, lastY ,wid, lastWid/2);
+              g.drawRect(lastX+lastLen-len-wid, lastY+lastWid/2 ,wid, lastWid/2);
             } else if (lastDir == "up") {
-              g.drawRect(lastX, lastY + lastLen-wid-len ,lastWid, wid);
+              g.drawRect(lastX, lastY + lastLen-wid-len ,lastWid/2, wid);
+              g.drawRect(lastX+lastWid/2, lastY + lastLen-wid-len ,lastWid/2, wid);
             } else if (lastDir == "down") {
-              g.drawRect(lastX, lastY+len ,lastWid, wid);
+              g.drawRect(lastX, lastY+len ,lastWid/2, wid);
+              g.drawRect(lastX+lastWid/2, lastY+len ,lastWid/2, wid);
             }
           } else if (element == "door" && len+wid <= lastLen) {
             g.beginFill("#FFFFFF");
             var shape = new createjs.Shape();
+            shape.graphics.beginStroke("#000000").setStrokeStyle(1).moveTo(0,0);
             if (lastDir == "right") {
               g.drawRect(lastX+len, lastY ,wid, lastWid);
-              shape.graphics.beginFill("#ff0000").drawRect(0, 0, wid, 2);
-              shape.x = lastX+len; shape.y = lastY;
+              shape.graphics.lineTo(0, 2*lastWid);
+              shape.x = lastX+len+wid/2; shape.y = lastY-lastWid/2;
             } else if (lastDir == "left") {
               g.drawRect(lastX+lastLen-len-wid, lastY ,wid, lastWid);
-              shape.graphics.beginFill("#ff0000").drawRect(0, 0, wid, 2);
-              shape.x = lastX+lastLen-len-wid; shape.y = lastY;
+              shape.graphics.lineTo(0, 2*lastWid);
+              shape.x = lastX+lastLen-len-wid/2; shape.y = lastY-lastWid/2;
             } else if (lastDir == "up") {
               g.drawRect(lastX, lastY + lastLen-wid-len ,lastWid, wid);
-              shape.graphics.beginFill("#ff0000").drawRect(0, 0, 2, wid);
-              shape.x = lastX; shape.y = lastY + lastLen-wid-len;
+              shape.graphics.lineTo(2*lastWid, 0);
+              shape.x = lastX-lastWid/2; shape.y = lastY + lastLen-wid/2-len;
             } else if (lastDir == "down") {
               g.drawRect(lastX, lastY+len ,lastWid, wid);
-              shape.graphics.beginFill("#ff0000").drawRect(0, 0, 2, wid);
-              shape.x = lastX; shape.y = lastY+len;
+              shape.graphics.lineTo(2*lastWid, 0);
+              shape.x = lastX-lastWid/2; shape.y = lastY + len + wid/2;
             }
 
-            shape.rotation = -30;
             container.addChild(shape);
           }
 
