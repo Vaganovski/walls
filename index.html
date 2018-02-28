@@ -233,7 +233,7 @@
                 lastDir = dir;
                 lastLen = len+lastWid;
                 g.drawRect(lastX, lastY ,lastLen, wid);
-                lastWid = wid;
+                lastWid = wid;lastL=len;
                 erase=true;
               } else if (lastDir=="up") {
                 lastX = lastX-len+lastWid;
@@ -257,7 +257,7 @@
                 lastDir = dir;
                 lastLen = len-lastWid;
                 g.drawRect(lastX, lastY ,wid, lastLen);
-                lastWid = wid;
+                lastWid = wid; lastL=len;
                 erase=true;
               } else if (lastDir=="left") {
                 lastX = lastX-wid;
@@ -298,7 +298,7 @@
                 erase=true;
               }
             }
-          } else if (element == "window") {
+          } else if (element == "window" && wid<=lastL) {
             g.beginFill("#FFFFFF");
             var deltaL = lastL-lastLen;
             if (lastDir == "right") {
