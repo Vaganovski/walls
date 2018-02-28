@@ -79,7 +79,7 @@
 <div style="width:901px; border:2px solid #fee599; padding:20px;">
 <canvas id="testCanvas" width="901" height="601"></canvas>
 
-<div style="height:150px; border:2px solid #c55a11; background:#deebf7; position: relative;">
+<div id="form" style="height:150px; border:2px solid #c55a11; background:#deebf7; position: relative;">
 
 <div id="up" class="button up"></div>
 <div id="left" class="button left"></div>
@@ -91,8 +91,7 @@
 <div id="wall" class="button wall">Стена</div>
 <div id="window" class="button window">Окно</div>
 <div id="door" class="button door">Дверь</div>
-<div class="divider" style="left:430px;"></div>
-<div id="corner" class="button corner">Угол</div>
+<div class="divider" style="left:450px;"></div>
 <div class="len">
   <label id="line1">Длина: </label><input type="text" id="len"><label> см.</label>
 </div>
@@ -112,8 +111,8 @@
 	var canvas, g;
 	var stage, container, line1, line2;
   var dir, element, offsetX=0, offsetY=0, contX, contY;
-  var lastLen=0, lastWid=0, lastDir, lastX=300, lastY=300;
-  var ppm = 50, corner=0;
+  var lastLen=0, lastWid=0, lastDir, lastX=300, lastY=300, lastL=0;
+  var ppm = 50, corner=0; erase = false;
 	function init() {
 		canvas = document.getElementById("testCanvas");
 		stage = new createjs.Stage(canvas);
@@ -167,6 +166,10 @@
           $(this).css('opacity', 0.5);
       });
 
+      $("#ok").click(function(event) {
+          $("#form").hide();
+      });
+
       $("#corner").click(function(event) {
           corner = 1 - corner;
           if (corner) {
@@ -202,130 +205,156 @@
             g.beginFill("#ffffff");
             if (dir == "right") {
               if (lastDir=="down") {
-                lastX = lastX;
-                lastY = lastY+lastLen;
+                lastX = lastX+lastWid;
+                lastY = lastY+lastLen-wid;
                 lastDir = dir;
-                g.drawRect(lastX, lastY ,len+lastWid, wid);
-                lastLen = len+lastWid; lastWid = wid;
+                lastLen = len-lastWid;
+                g.drawRect(lastX, lastY ,lastLen, wid);
+                lastWid = wid; lastL=len;
+                erase=true;
               } else if (lastDir=="up") {
                 lastX = lastX;
                 lastY = lastY-wid;
                 lastDir = dir;
-                g.drawRect(lastX, lastY ,len+lastWid*(1-corner), wid);
-                lastLen = len; lastWid = wid;
+                lastLen = len+lastWid;
+                g.drawRect(lastX, lastY ,lastLen, wid);
+                lastWid = wid; lastL=len;
+                erase=true;
               } else if (!lastDir) {
                 lastDir = dir;
                 g.drawRect(lastX, lastY ,len, wid);
-                lastLen = len; lastWid = wid;
+                lastLen = len; lastWid = wid; lastL=len;
+                erase=true;
               }
             } else if (dir == "left") {
               if (lastDir=="down") {
                 lastX = lastX-len;
-                lastY = lastY+lastLen-wid;
+                lastY = lastY+lastLen;
                 lastDir = dir;
-                g.drawRect(lastX, lastY ,len, wid);
-                lastLen = len; lastWid = wid;
+                lastLen = len+lastWid;
+                g.drawRect(lastX, lastY ,lastLen, wid);
+                lastWid = wid;
+                erase=true;
               } else if (lastDir=="up") {
-                lastX = lastX-len;
+                lastX = lastX-len+lastWid;
                 lastY = lastY;
                 lastDir = dir;
-                g.drawRect(lastX, lastY ,len, wid);
-                lastLen = len; lastWid = wid;
+                lastLen = len-lastWid;
+                g.drawRect(lastX, lastY ,lastLen, wid);
+                lastWid = wid; lastL=len;
+                erase=true;
               } else if (!lastDir) {
                 lastDir = dir;
                 lastX = lastX-len;
                 g.drawRect(lastX, lastY ,len, wid);
-                lastLen = len; lastWid = wid;
+                lastLen = len; lastWid = wid; lastL=len;
+                erase=true;
               }
             } else if (dir == "up") {
               if (lastDir=="right") {
-                lastX = lastX+lastLen;
-                lastY = lastY-len;
+                lastX = lastX+lastLen-wid;
+                lastY = lastY-len+lastWid;
                 lastDir = dir;
-                g.drawRect(lastX, lastY ,wid, len);
-                lastLen = len; lastWid = wid;
+                lastLen = len-lastWid;
+                g.drawRect(lastX, lastY ,wid, lastLen);
+                lastWid = wid;
+                erase=true;
               } else if (lastDir=="left") {
                 lastX = lastX-wid;
                 lastY = lastY-len;
                 lastDir = dir;
-                g.drawRect(lastX, lastY ,wid, len+lastWid);
-                lastLen = len; lastWid = wid;
+                lastLen = len+lastWid;
+                g.drawRect(lastX, lastY ,wid, lastLen);
+                lastWid = wid; lastL=len;
+                erase=true;
               } else if (!lastDir) {
                 lastDir = dir;
                 lastY = lastY-len;
                 g.drawRect(lastX, lastY ,wid, len);
-                lastLen = len; lastWid = wid;
+                lastLen = len; lastWid = wid; lastL=len;
+                erase=true;
               }
             } else if (dir == "down") {
               if (lastDir=="right") {
                 lastX = lastX+lastLen;
-                lastY = lastY+lastWid;
+                lastY = lastY;
                 lastDir = dir;
-                g.drawRect(lastX, lastY ,wid, len);
-                lastLen = len; lastWid = wid;
+                lastLen = len+lastWid;
+                g.drawRect(lastX, lastY ,wid, lastLen);
+                lastWid = wid;lastL=len;
+                erase=true;
               } else if (lastDir=="left") {
-                lastX = lastX-wid;
+                lastX = lastX;
                 lastY = lastY+lastWid;
                 lastDir = dir;
-                g.drawRect(lastX, lastY -lastWid,wid, len+lastWid);
-                lastLen = len; lastWid = wid;
+                lastLen = len-lastWid;
+                g.drawRect(lastX, lastY ,wid, lastLen);
+                 lastWid = wid;lastL=len;
+                 erase=true;
               } else if (!lastDir) {
                 lastDir = dir;
                 g.drawRect(lastX, lastY ,wid, len);
-                lastLen = len; lastWid = wid;
+                lastLen = len; lastWid = wid;lastL=len;
+                erase=true;
               }
             }
-          } else if (element == "window" && len+wid <= lastLen) {
+          } else if (element == "window") {
             g.beginFill("#FFFFFF");
+            var deltaL = lastL-lastLen;
             if (lastDir == "right") {
-              g.drawRect(lastX+len, lastY ,wid-len, lastWid/2);
-              g.drawRect(lastX+len, lastY+lastWid/2 ,wid-len, lastWid/2);
+              g.drawRect(lastX+len-deltaL, lastY ,wid-len, lastWid/2);
+              g.drawRect(lastX+len-deltaL, lastY+lastWid/2 ,wid-len, lastWid/2);
             } else if (lastDir == "left") {
-              g.drawRect(lastX+lastLen-wid, lastY ,wid-len, lastWid/2);
-              g.drawRect(lastX+lastLen-wid, lastY+lastWid/2 ,wid-len, lastWid/2);
+              g.drawRect(lastX+lastLen-wid+deltaL, lastY ,wid-len, lastWid/2);
+              g.drawRect(lastX+lastLen-wid+deltaL, lastY+lastWid/2 ,wid-len, lastWid/2);
             } else if (lastDir == "up") {
-              g.drawRect(lastX, lastY + lastLen-wid ,lastWid/2, wid-len);
-              g.drawRect(lastX+lastWid/2, lastY + lastLen-wid ,lastWid/2, wid-len);
+              g.drawRect(lastX, lastY + lastLen-wid+deltaL ,lastWid/2, wid-len);
+              g.drawRect(lastX+lastWid/2, lastY + lastLen-wid+deltaL ,lastWid/2, wid-len);
             } else if (lastDir == "down") {
-              g.drawRect(lastX, lastY+len ,lastWid/2, wid-len);
-              g.drawRect(lastX+lastWid/2, lastY+len ,lastWid/2, wid-len);
+              g.drawRect(lastX, lastY+len-deltaL ,lastWid/2, wid-len);
+              g.drawRect(lastX+lastWid/2, lastY+len-deltaL ,lastWid/2, wid-len);
             }
-          } else if (element == "door" && len+wid <= lastLen) {
+            erase=true;
+          } else if (element == "door") {
+            var deltaL = lastL-lastLen;
             g.beginFill("#FFFFFF");
             var shape = new createjs.Shape();
             shape.graphics.beginStroke("#000000").setStrokeStyle(1).moveTo(0,0);
             if (lastDir == "right") {
-              g.drawRect(lastX+len, lastY ,wid-len, lastWid);
+              g.drawRect(lastX+len-deltaL, lastY ,wid-len, lastWid);
               shape.graphics.lineTo(0, 2*lastWid);
-              shape.x = lastX+len/2+wid/2; shape.y = lastY-lastWid/2;
+              shape.x = lastX+len/2+wid/2-deltaL; shape.y = lastY-lastWid/2;
             } else if (lastDir == "left") {
-              g.drawRect(lastX+lastLen-wid, lastY ,wid-len, lastWid);
+              g.drawRect(lastX+lastLen-wid+deltaL, lastY ,wid-len, lastWid);
               shape.graphics.lineTo(0, 2*lastWid);
-              shape.x = lastX+lastLen-wid/2-len/2; shape.y = lastY-lastWid/2;
+              shape.x = lastX+lastLen-wid/2-len/2+deltaL; shape.y = lastY-lastWid/2;
             } else if (lastDir == "up") {
-              g.drawRect(lastX, lastY + lastLen-wid ,lastWid, wid-len);
+              g.drawRect(lastX, lastY + lastLen-wid+deltaL ,lastWid, wid-len);
               shape.graphics.lineTo(2*lastWid, 0);
-              shape.x = lastX-lastWid/2; shape.y = lastY + lastLen-wid/2-len/2;
+              shape.x = lastX-lastWid/2; shape.y = lastY + lastLen-wid/2-len/2+deltaL;
             } else if (lastDir == "down") {
-              g.drawRect(lastX, lastY+len ,lastWid, wid-len);
+              g.drawRect(lastX,lastY+len-deltaL ,lastWid, wid-len);
               shape.graphics.lineTo(2*lastWid, 0);
-              shape.x = lastX-lastWid/2; shape.y = lastY + len/2 + wid/2;
+              shape.x = lastX-lastWid/2; shape.y = lastY + len/2 + wid/2-deltaL;
             }
 
             container.addChild(shape);
+            erase=true;
           }
 
           element="";
           //lastDir = dir;
           //lastLen = len; lastWid = wid;
 
-
           stage.update();
           $("#wall, #door, #window").css('opacity', 1);
 
-          //$("#len").val("");
-          //$("#wid").val("");
 
+          if (erase==true) {
+            $("#len").val("");
+            $("#wid").val("");
+            erase = false;
+          }
       });
 
   });
