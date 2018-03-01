@@ -72,26 +72,40 @@
       position: absolute; top:80px; right:20px; width: 80px;
     }
 
-    .divider {height: 100%; width:2px; background:#c55a11; position: absolute;}
+    .glabel {position: absolute; bottom: 0; color: green;}
+
+    .divider {height: 100%; width:2px; background:#c55a11; position: absolute; font-size: 16px;}
     </style>
   </head>
   <body onload="init();">
-<div style="width:901px; border:2px solid #fee599; padding:20px;">
-<canvas id="testCanvas" width="901" height="601"></canvas>
+<div style="width:801px; border:2px solid #fee599; padding:20px;">
+<canvas id="testCanvas" width="801" height="601"></canvas>
 
-<div id="form" style="height:150px; border:2px solid #c55a11; background:#deebf7; position: relative;">
+<div id="form" style="height:170px; border:2px solid #c55a11; background:#deebf7; position: relative;">
 
 <div id="up" class="button up"></div>
 <div id="left" class="button left"></div>
 <div id="right" class="button right"></div>
 <div id="down" class="button down"></div>
 
+<div class="glabel" style="left:30px;">
+  Направление
+</div>
+
 <div class="divider" style="left:170px;"></div>
 
 <div id="wall" class="button wall">Стена</div>
 <div id="window" class="button window">Окно</div>
 <div id="door" class="button door">Дверь</div>
+
+<div class="glabel" style="left:270px;">
+  Направление
+</div>
+
 <div class="divider" style="left:450px;"></div>
+<div class="glabel" style="right:110px;">
+  Данные элемента
+</div>
 <div class="len">
   <label id="line1">Длина: </label><input type="text" id="len"><label> см.</label>
 </div>
