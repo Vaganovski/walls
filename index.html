@@ -336,7 +336,7 @@
                 addWall(lastX, lastY ,wid, len, dir, len);
               }
             }
-          } else if (element == "window") {
+          } else if (element == "window" && len<wid && wid<=lastL) {
             var window = new createjs.Shape();
             window.graphics.beginFill("#ffffff").beginStroke("#000000");
             var deltaL = lastL-lastLen;
@@ -356,7 +356,7 @@
             container.addChild(window);
             elements.push({element:window, type:"window"});
             erase=true;
-          } else if (element == "door") {
+          } else if (element == "door" && len<wid && wid<=lastL) {
             var deltaL = lastL-lastLen;
             var door = new createjs.Shape();
             door.graphics.beginFill("#ffffff").beginStroke("#000000");
