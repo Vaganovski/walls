@@ -52,6 +52,18 @@
       text-align: center; padding-top: 50px; height: 25px;
     }
 
+    .pencil {
+      background: url('stuff/pencil.png') no-repeat top;
+      position: absolute; top:50px; left:30px; width: 50px;
+      text-align: center; padding-top: 50px; height: 25px;
+    }
+
+    .eraser {
+      background: url('stuff/eraser.png') no-repeat top;
+      position: absolute; top:50px; left:100px; width: 50px;
+      text-align: center; padding-top: 50px; height: 25px;
+    }
+
     .len {
       text-align: right;
       position: absolute; top: 20px; right:130px;
@@ -87,6 +99,7 @@
   <body onload="init();">
 <div style="width:801px; border:2px solid #fee599; padding:20px;">
 <canvas id="testCanvas" width="801" height="601"></canvas>
+<button type="button" name="stylus" id="stylus">Отрисовка стилусом</button>
 
 <div id="form" style="height:170px; border:2px solid #c55a11; background:#deebf7; position: relative;">
 
@@ -131,6 +144,21 @@
 
 </div>
 
+<div id="form2" style="height:170px; border:2px solid #c55a11; background:#deebf7; position: relative; display:none;">
+
+<div class="divider" style="left:170px;"></div>
+
+<div id="pencil" class="button pencil">Стилус</div>
+<div id="eraser" class="button eraser">Ластик</div>
+
+<div class="glabel" style="left:270px;">
+  Инструмент
+</div>
+
+
+
+</div>
+
 <script type="text/javascript" src="js/easeljs-NEXT.min.js"></script>
 <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
 <script>
@@ -139,7 +167,7 @@
   var dir, element, offsetX=0, offsetY=0, contX, contY;
   var lastLen=0, lastWid=0, lastDir, lastX=300, lastY=300, lastL=0;
   var ppm = 50, corner=0; erase = false;
-  var elements=[];
+  var elements=[], stylus, oldX, oldY, paint=0, color, wrapper, size=10;
 	function init() {
 		canvas = document.getElementById("testCanvas");
 		stage = new createjs.Stage(canvas);
@@ -147,16 +175,38 @@
     stage.enableMouseOver(5);
 
     stage.on("pressmove", function(evt) {
+
+      if (paint==0) {
         container.x = contX+evt.stageX-offsetX;
         container.y = contY+evt.stageY-offsetY;
         stage.update();
+      } else {
+        if (oldX) {
+					stylus.graphics.beginStroke(color)
+								  .setStrokeStyle(size, "round")
+								  .moveTo(oldX, oldY)
+								  .lineTo(evt.stageX-container.x, evt.stageY-container.y);
+				}
+				oldX = evt.stageX-container.x;
+				oldY = evt.stageY-container.y;
+        wrapper.updateCache(element=="eraser"?"destination-out":"source-over");
+        stylus.graphics.clear();
+        stage.update();
+      }
+
+
     });
 
     $('#addlast').prop('checked', false);
 
     stage.on("mousedown", function(evt) {
-      contX = container.x; contY = container.y;
-      offsetX=evt.stageX; offsetY = evt.stageY;
+      if (paint==0) {
+        contX = container.x; contY = container.y;
+        offsetX=evt.stageX; offsetY = evt.stageY;
+      } else {
+        oldX = evt.stageX-container.x;
+        oldY = evt.stageY-container.y;
+      }
     });
 
     var grid = new createjs.Shape();
@@ -180,6 +230,14 @@
     var shape = new createjs.Shape(g);
     container.addChild(shape);
 
+    wrapper = new createjs.Container();
+    wrapper.hitArea = new createjs.Shape(new createjs.Graphics().f("#000").dr(0,0,800,600));
+    wrapper.cache(-2*800,-2*600,4*800,4*600); // Cache it.
+
+    container.addChild(wrapper);
+
+    stylus = new createjs.Shape();
+    wrapper.addChild(stylus);
     stage.update();
 	}
 
@@ -261,6 +319,28 @@
             line1.text("Длина: ");
             line2.text("Ширина: ");
           }
+      });
+
+
+      $("#pencil, #eraser").click(function(event) {
+          element = event.target.id;
+          $("#pencil, #eraser").css('opacity', 1);
+          $(this).css('opacity', 0.5);
+          if (element == "pencil") {
+            color="#000000";
+          } else {
+
+
+          }
+      });
+
+
+
+
+      $( "#stylus" ).click(function() {
+          $( "#form" ).toggle();
+          $( "#form2" ).toggle();
+          paint=1-paint;
       });
 
       line1 = $("#line1");line2 = $("#line2");
