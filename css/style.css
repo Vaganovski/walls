@@ -1,0 +1,94 @@
+.button {
+  width:50px;
+  height: 50px;
+  cursor: pointer;
+}
+.up {
+  background: url('../stuff/u.png') no-repeat center;
+  position: absolute; top:0; left:50px;
+}
+
+.left {
+  background: url('../stuff/l.png') no-repeat center;
+  position: absolute; top:50px; left:0px;
+}
+.right {
+  background: url('../stuff/r.png') no-repeat center;
+  position: absolute; top:50px; left:100px;
+}
+.down {
+  background: url('../stuff/d.png') no-repeat center;
+  position: absolute; top:100px; left:50px;
+}
+
+.wall {
+  background: url('../stuff/wall.png') no-repeat top;
+  position: absolute; top:50px; left:180px; width: 100px;
+  text-align: center; padding-top: 30px; height: 25px;
+}
+
+.corner {
+  background: url('../stuff/corner.png') no-repeat top;
+  position: absolute; top:50px; right:380px; width: 50px;
+  text-align: center; padding-top: 50px; height: 25px;
+}
+
+.window {
+  background: url('../stuff/window.png') no-repeat top;
+  position: absolute; top:50px; left:300px; width: 50px;
+  text-align: center; padding-top: 50px; height: 25px;
+}
+
+.door {
+  background: url('../stuff/door.png') no-repeat top;
+  position: absolute; top:50px; left:370px; width: 50px;
+  text-align: center; padding-top: 50px; height: 25px;
+}
+
+.pencil {
+  background: url('../stuff/pencil.png') no-repeat top;
+  position: absolute; top:50px; left:30px; width: 50px;
+  text-align: center; padding-top: 50px; height: 25px;
+}
+
+.eraser {
+  background: url('../stuff/eraser.png') no-repeat top;
+  position: absolute; top:50px; left:100px; width: 50px;
+  text-align: center; padding-top: 50px; height: 25px;
+}
+
+.len {
+  text-align: right;
+  position: absolute; top: 20px; right:130px;
+}
+.lastwall {
+  text-align: right;
+  position: absolute; width: 200px; top: 110px; right:10px;
+}
+input {width: 50px;}
+
+.wid {
+  text-align: right;
+  position: absolute; top: 80px; right:130px;
+}
+
+.brush
+{width:35px; background:#000; position:absolute; left:200px;}
+
+.brush:hover {cursor:pointer;}
+
+#ok {
+  position: absolute; top:20px; right:20px; width: 80px;
+}
+
+#next {
+  position: absolute; top:80px; right:20px; width: 80px;
+}
+
+#undo {
+  position: absolute; top:140px; right:20px; width: 80px;
+}
+
+.glabel {position: absolute; bottom: 0; color: green;}
+
+.divider {height: 100%; width:2px; background:#c55a11; position: absolute; font-size: 16px;}
