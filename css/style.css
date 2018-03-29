@@ -75,17 +75,22 @@ input {width: 50px;}
 .brush
 {width:35px; background:#000; position:absolute; left:200px;}
 
+.b2:after{content: "2"; top:1px; position: absolute;}
+.b5:after{content: "5"; top:4px;position: absolute;}
+.b8:after{content: "8"; top:6px;position: absolute;}
+.b10:after{content: "10"; top:12px; position: absolute;}
+
 .brush:hover {cursor:pointer;}
 
-#ok {
+#next {
   position: absolute; top:20px; right:20px; width: 80px;
 }
 
-#next {
+#undo {
   position: absolute; top:80px; right:20px; width: 80px;
 }
 
-#undo {
+#ok {
   position: absolute; top:140px; right:20px; width: 80px;
 }
 
